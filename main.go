@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 )
 
@@ -34,8 +35,9 @@ func HealthHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	http.HandleFunc("/animals", AnimalsHandler)
 	http.HandleFunc("/status", HealthHandler)
-	err := http.ListenAndServe(":1234", nil)
+	log.Println("** Service Started on Port 8080 **")
+	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
-		return
+		log.Fatal(err)
 	}
 }
