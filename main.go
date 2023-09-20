@@ -5,7 +5,6 @@ import (
 	"github.com/eif-courses/golab/db"
 	"github.com/eif-courses/golab/router"
 	"github.com/eif-courses/golab/services"
-	"github.com/joho/godotenv"
 	"log"
 	"net/http"
 	"os"
@@ -21,10 +20,10 @@ type Application struct {
 
 func (app *Application) Serve() error {
 
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	//err := godotenv.Load()
+	//if err != nil {
+	//	log.Fatal("Error loading .env file")
+	//}
 	port := os.Getenv("PORT")
 	fmt.Println("API Is litenening on port", port)
 
@@ -37,10 +36,10 @@ func (app *Application) Serve() error {
 
 func main() {
 
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	//err := godotenv.Load()
+	//if err != nil {
+	//	log.Fatal("Error loading .env file")
+	//}
 	config := Config{
 		Port: os.Getenv("PORT"),
 	}
