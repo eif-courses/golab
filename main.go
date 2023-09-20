@@ -2,9 +2,27 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 )
+
+type Config struct {
+	Port string
+}
+type Application struct {
+	Config Config
+}
+
+var port = "8080"
+
+func (app *Application) Serve() error {
+
+	server := &http.Server{
+		Addr: fmt.Sprintf(":%s", port),
+	}
+	return server.ListenAndServe()
+}
 
 type Animal struct {
 	Name string `json:"Name"`
@@ -33,6 +51,10 @@ func HealthHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+
+	var config Config
+	config.Port = port
+
 	http.HandleFunc("/animals", AnimalsHandler)
 	http.HandleFunc("/status", HealthHandler)
 	log.Println("** Service Started on Port 8080 **")
