@@ -1,10 +1,11 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/joho/godotenv"
 	"golab/db"
+	"golab/router"
+	"golab/services"
 	"log"
 	"net/http"
 	"os"
@@ -15,6 +16,7 @@ type Config struct {
 }
 type Application struct {
 	Config Config
+	Models services.Models
 }
 
 func (app *Application) Serve() error {
@@ -27,36 +29,10 @@ func (app *Application) Serve() error {
 	fmt.Println("API Is litenening on port", port)
 
 	server := &http.Server{
-		Addr: fmt.Sprintf(":%s", port),
-		// TODO Add router
+		Addr:    fmt.Sprintf(":%s", port),
+		Handler: router.Routes(),
 	}
 	return server.ListenAndServe()
-}
-
-type Animal struct {
-	Name string `json:"Name"`
-	Type string `json:"Type"`
-}
-
-func AnimalsHandler(w http.ResponseWriter, r *http.Request) {
-	animals := []Animal{
-		{"Alice", "Cat"},
-		{"Bob", "Cat"},
-		{"Trinity", "Dog"},
-	}
-	err := json.NewEncoder(w).Encode(animals)
-	if err != nil {
-		return
-	}
-}
-
-func HealthHandler(w http.ResponseWriter, r *http.Request) {
-
-	data := Animal{"Liutas", "Kate"}
-	err := json.NewEncoder(w).Encode(data)
-	if err != nil {
-		return
-	}
 }
 
 func main() {
@@ -79,19 +55,10 @@ func main() {
 
 	app := &Application{
 		Config: config,
-		// todo add models
+		Models: services.New(dbConnection.DB),
 	}
 	err = app.Serve()
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	//
-	//http.HandleFunc("/animals", AnimalsHandler)
-	//http.HandleFunc("/status", HealthHandler)
-	//log.Println("** Service Started on Port 8080 **")
-	//err := http.ListenAndServe(":8080", nil)
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
 }
