@@ -3,7 +3,7 @@ package helpers
 import (
 	"encoding/json"
 	"errors"
-	"golab/services"
+	"github.com/eif-courses/golab/services"
 	"log"
 	"net/http"
 	"os"

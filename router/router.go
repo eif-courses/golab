@@ -1,10 +1,10 @@
 package router
 
 import (
+	"github.com/eif-courses/golab/controllers"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
-	"golab/controllers"
 	"net/http"
 )
 

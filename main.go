@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
+	"github.com/eif-courses/golab/db"
+	"github.com/eif-courses/golab/router"
+	"github.com/eif-courses/golab/services"
 	"github.com/joho/godotenv"
-	"golab/db"
-	"golab/router"
-	"golab/services"
 	"log"
 	"net/http"
 	"os"

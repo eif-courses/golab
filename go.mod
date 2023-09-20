@@ -1,4 +1,4 @@
-module golab
+module github.com/eif-courses/golab
 
 go 1.21
 

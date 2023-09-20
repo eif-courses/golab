@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"encoding/json"
-	"golab/helpers"
-	"golab/services"
+	"github.com/eif-courses/golab/helpers"
+	"github.com/eif-courses/golab/services"
 	"net/http"
 )
 
