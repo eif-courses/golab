@@ -1,4 +1,4 @@
-package helpers
+package utils
 
 import (
 	"encoding/json"
@@ -66,4 +66,11 @@ func ErrorJSON(w http.ResponseWriter, err error, status ...int) {
 	payload.Error = true
 	payload.Message = err.Error()
 	WriteJSON(w, statusCode, payload)
+}
+
+func ServerErrorHTTP(err error, w http.ResponseWriter) {
+	if err != nil {
+		http.Error(w, "Server error", http.StatusInternalServerError)
+		return
+	}
 }

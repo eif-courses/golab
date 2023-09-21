@@ -21,6 +21,9 @@ func Routes() http.Handler {
 	}))
 
 	router.Get("/api/v1/users", controllers.GetAllUsers)
-	router.Post("/api/v1/users/{id}", controllers.CreateUser)
+	router.Get("/api/v1/users/user/{id}", controllers.GetUserById)
+	router.Post("/api/v1/users/user", controllers.CreateUser)
+	router.Put("/api/v1/users/user/{id}", controllers.UpdateUser)
+	router.Delete("/api/v1/users/user/{id}", controllers.DeleteUser)
 	return router
 }

@@ -46,14 +46,62 @@ func (u *User) CreateUser(user User) (*User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
-	query := `INSERT INTO users (id, name, image, created_at, updated_at)
-			  VALUES ($1, $2, $3, $4, $5) return *`
+	query := `INSERT INTO users (name, image, created_at, updated_at)
+			  VALUES ($1, $2, $3, $4) returning *`
 
-	_, err := db.ExecContext(ctx, query, user.ID, user.Name, user.Image, user.CreatedAt, user.UpdatedAt)
+	_, err := db.ExecContext(ctx, query, user.Name, user.Image, user.CreatedAt, user.UpdatedAt)
 
 	if err != nil {
 		return nil, err
 	}
 	return &user, nil
 
+}
+
+func (u *User) GetUserById(id string) (*User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+	query := `SELECT id, name, image, created_at, updated_at from users WHERE id=$1`
+
+	var user User
+
+	rows := db.QueryRowContext(ctx, query, id)
+	err := rows.Scan(
+		&user.ID,
+		&user.Name,
+		&user.Image,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (u *User) UpdateUser(id string, body User) (*User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	query := `UPDATE users SET name=$1, image=$2, updated_at=$3 WHERE id=$4 returning *`
+
+	_, err := db.ExecContext(ctx, query, body.Name, body.Image, time.Now(), id)
+	if err != nil {
+		return nil, err
+	}
+	return &body, nil
+}
+
+func (u *User) DeleteUser(id string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	query := `DELETE FROM users WHERE id=$1`
+
+	_, err := db.ExecContext(ctx, query, id)
+	if err != nil {
+		return err
+	}
+	return nil
 }
