@@ -68,6 +68,6 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		utils.MessageLogs.ErrorLog.Println(err)
 	}
-	err = utils.WriteJSON(w, http.StatusOK, "Successfully deleted!")
+	err = utils.WriteJSON(w, http.StatusOK, utils.Envelope{"message": "Successfully deleted!"})
 	utils.ServerErrorHTTP(err, w)
 }
