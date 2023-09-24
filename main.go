@@ -2,8 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/eif-courses/golab/db"
-	"github.com/eif-courses/golab/router"
+	"github.com/eif-courses/golab/api"
 	"github.com/eif-courses/golab/services"
 	"github.com/joho/godotenv"
 	"log"
@@ -30,7 +29,7 @@ func (app *Application) Serve() error {
 
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%s", port),
-		Handler: router.Routes(),
+		Handler: api.Routes(),
 	}
 	return server.ListenAndServe()
 }
@@ -46,7 +45,7 @@ func main() {
 	}
 
 	dsn := os.Getenv("DSN")
-	dbConnection, err := db.ConnectPostgres(dsn)
+	dbConnection, err := api.ConnectPostgres(dsn)
 	if err != nil {
 		log.Fatal("Cannot connect to database!")
 	}

@@ -2,6 +2,7 @@ package services
 
 import (
 	"database/sql"
+	"github.com/eif-courses/golab/types"
 	"time"
 )
 
@@ -11,7 +12,7 @@ const dbTimeout = time.Second * 3
 
 type Models struct {
 	User         User
-	JsonResponse JsonResponse
+	JsonResponse types.JsonResponse
 }
 
 func New(dbPool *sql.DB) Models {

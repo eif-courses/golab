@@ -1,4 +1,4 @@
-package router
+package api
 
 import (
 	"github.com/eif-courses/golab/controllers"
