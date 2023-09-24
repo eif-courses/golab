@@ -7,6 +7,9 @@ sqlx migrate add -r init
 # ISKVIECIAM MIGRATION UP
 .\sqlx migrate run --database-url "postgres://postgres:root@localhost:5432/golab?sslmode=disable"
 
-
-
 Migracijoms naudojam cargo package sqlx : https://crates.io/crates/sqlx-cli/0.1.0-beta.1
+
+# DOkumentacijai generuoti
+swag init --parseDependency --parseInternal
+# Dokumentacijai naudojam swaggo:
+https://github.com/swaggo/http-swagger

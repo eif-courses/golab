@@ -3,11 +3,16 @@ package utils
 import (
 	"encoding/json"
 	"errors"
-	"github.com/eif-courses/golab/types"
 	"log"
 	"net/http"
 	"os"
 )
+
+type JsonResponse struct {
+	Error   bool        `json:"error"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data,omitresponse"`
+}
 
 type Envelope map[string]interface{}
 
@@ -62,7 +67,7 @@ func ErrorJSON(w http.ResponseWriter, err error, status ...int) {
 	if len(status) > 0 {
 		statusCode = status[0]
 	}
-	var payload types.JsonResponse
+	var payload JsonResponse
 	payload.Error = true
 	payload.Message = err.Error()
 	WriteJSON(w, statusCode, payload)

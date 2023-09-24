@@ -7,7 +7,7 @@ import (
 
 // https://www.sohamkamani.com/golang/jwt-authentication/
 type User struct {
-	ID        string    `json:"id"`
+	UserId    string    `json:"user_id"`
 	Name      string    `json:"name"`
 	Image     string    `json:"image"`
 	Email     string    `json:"email"`
@@ -20,7 +20,7 @@ func (u *User) GetAllUsers() ([]*User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
-	query := `SELECT id, name, image, created_at, updated_at from users`
+	query := `SELECT user_id, name, email, image, created_at, updated_at from users`
 
 	rows, err := db.QueryContext(ctx, query)
 
@@ -32,8 +32,9 @@ func (u *User) GetAllUsers() ([]*User, error) {
 	for rows.Next() {
 		var user User
 		err := rows.Scan(
-			&user.ID,
+			&user.UserId,
 			&user.Name,
+			&user.Email,
 			&user.Image,
 			&user.CreatedAt,
 			&user.UpdatedAt)
@@ -49,10 +50,10 @@ func (u *User) CreateUser(user User) (*User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
-	query := `INSERT INTO users (name, image, created_at, updated_at)
-			  VALUES ($1, $2, $3, $4) returning *`
+	query := `INSERT INTO users (name, email, password, image, created_at, updated_at)
+			  VALUES ($1, $2, $3, $4, $5, $6) returning *`
 
-	_, err := db.ExecContext(ctx, query, user.Name, user.Image, user.CreatedAt, user.UpdatedAt)
+	_, err := db.ExecContext(ctx, query, user.Name, user.Email, user.Password, user.Image, user.CreatedAt, user.UpdatedAt)
 
 	if err != nil {
 		return nil, err
@@ -64,13 +65,13 @@ func (u *User) CreateUser(user User) (*User, error) {
 func (u *User) GetUserById(id string) (*User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
-	query := `SELECT id, name, image, created_at, updated_at from users WHERE id=$1`
+	query := `SELECT id, name, email, password, image, created_at, updated_at from users WHERE user_id=$1`
 
 	var user User
 
 	rows := db.QueryRowContext(ctx, query, id)
 	err := rows.Scan(
-		&user.ID,
+		&user.UserId,
 		&user.Name,
 		&user.Image,
 		&user.CreatedAt,
@@ -87,9 +88,9 @@ func (u *User) UpdateUser(id string, body User) (*User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
-	query := `UPDATE users SET name=$1, image=$2, updated_at=$3 WHERE id=$4 returning *`
+	query := `UPDATE users SET name=$1, email=$2, password=$3, image=$4, updated_at=$5 WHERE user_id=$6 returning *`
 
-	_, err := db.ExecContext(ctx, query, body.Name, body.Image, time.Now(), id)
+	_, err := db.ExecContext(ctx, query, body.Name, body.Email, body.Password, body.Image, time.Now(), id)
 	if err != nil {
 		return nil, err
 	}
@@ -100,7 +101,7 @@ func (u *User) DeleteUser(id string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
-	query := `DELETE FROM users WHERE id=$1`
+	query := `DELETE FROM users WHERE user_id=$1`
 
 	_, err := db.ExecContext(ctx, query, id)
 	if err != nil {
