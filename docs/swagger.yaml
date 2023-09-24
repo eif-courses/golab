@@ -32,6 +32,13 @@ definitions:
         - $ref: '#/definitions/sql.NullString'
         description: Use sql.NullString for nullable columns
     type: object
+  services.Credentials:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
   sql.NullString:
     properties:
       string:
@@ -57,6 +64,28 @@ info:
   title: Swagger Example API
   version: "1.0"
 paths:
+  /auth/signin:
+    post:
+      consumes:
+      - application/json
+      description: Sign in
+      parameters:
+      - description: Credentials
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/services.Credentials'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Sign in
+      tags:
+      - auth
   /courses/course:
     post:
       consumes:

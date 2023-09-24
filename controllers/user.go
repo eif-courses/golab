@@ -130,3 +130,33 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	err = utils.WriteJSON(w, http.StatusOK, utils.Envelope{"message": "Successfully deleted!"})
 	utils.ServerErrorHTTP(err, w)
 }
+
+// SignIn godoc
+// @Summary Sign in
+// @Description Sign in
+// @Tags auth
+// @Accept  json
+// @Produce  json
+// @Param credentials body services.Credentials true "Credentials"
+// @Success 200 {object} string
+// @Router /auth/signin [post]
+func SignIn(w http.ResponseWriter, r *http.Request) {
+	//id := chi.URLParam(r, "id")
+
+	var credentials services.Credentials
+	err := json.NewDecoder(r.Body).Decode(&credentials)
+	if err != nil {
+		utils.MessageLogs.ErrorLog.Println(err)
+		return
+	}
+	token, err := user.SignIn(
+		services.Credentials{
+			Username: credentials.Username,
+			Password: credentials.Password})
+	if err != nil {
+		utils.MessageLogs.ErrorLog.Println(err)
+		return
+	}
+	err = utils.WriteJSON(w, http.StatusOK, token)
+	utils.ServerErrorHTTP(err, w)
+}

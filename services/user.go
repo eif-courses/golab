@@ -2,8 +2,22 @@ package services
 
 import (
 	"context"
+	"github.com/eif-courses/golab/utils"
+	"github.com/golang-jwt/jwt/v5"
 	"time"
 )
+
+var jwtKey = []byte("my_secret_key")
+
+type Credentials struct {
+	Password string `json:"password"`
+	Username string `json:"username"`
+}
+
+type Claims struct {
+	Username string `json:"username"`
+	jwt.RegisteredClaims
+}
 
 // https://www.sohamkamani.com/golang/jwt-authentication/
 type User struct {
@@ -14,6 +28,39 @@ type User struct {
 	Password  string    `json:"password"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+}
+
+func (u *User) SignIn(credentials Credentials) (string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	query := `SELECT password FROM users WHERE email=$1`
+
+	var user User
+
+	rows := db.QueryRowContext(ctx, query, credentials.Username)
+	err := rows.Scan(
+		&user.Password,
+	)
+
+	if err != nil {
+		return "", err
+	}
+
+	if utils.CheckPasswordHash(credentials.Password, user.Password) == false {
+		return "", nil
+	}
+
+	expirationTime := time.Now().Add(5 * time.Minute)
+	claims := &Claims{
+		Username: credentials.Username,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(expirationTime),
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	return token.SignedString(jwtKey)
 }
 
 func (u *User) GetAllUsers() ([]*User, error) {
@@ -53,7 +100,12 @@ func (u *User) CreateUser(user User) (*User, error) {
 	query := `INSERT INTO users (name, email, password, image, created_at, updated_at)
 			  VALUES ($1, $2, $3, $4, $5, $6) returning *`
 
-	_, err := db.ExecContext(ctx, query, user.Name, user.Email, user.Password, user.Image, user.CreatedAt, user.UpdatedAt)
+	hashed, er := utils.GeneratehashPassword(user.Password)
+	if er != nil {
+		return nil, er
+	}
+
+	_, err := db.ExecContext(ctx, query, user.Name, user.Email, hashed, user.Image, user.CreatedAt, user.UpdatedAt)
 
 	if err != nil {
 		return nil, err

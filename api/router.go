@@ -27,6 +27,7 @@ func Routes() http.Handler {
 	router.Put("/api/v1/users/user/{id}", controllers.UpdateUser)
 	router.Delete("/api/v1/users/user/{id}", controllers.DeleteUser)
 	router.Post("/api/v1/courses/course", controllers.CreateCourse)
+	router.Post("/api/v1/auth/signin", controllers.SignIn)
 
 	return router
 }
